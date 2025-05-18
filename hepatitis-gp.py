@@ -35,7 +35,6 @@ def getDataFrame(filePath):
   df = pandas.read_csv(filePath, delimiter='\t')
 
   df.dropna(inplace=True)
-  df['target'] = df['target'].replace(2, 0)
 
   X = df.iloc[:, :-1]
   Y = df.iloc[:, -1] 
@@ -262,9 +261,15 @@ def generatePopulation(terminalSet: List[Primitives.Node], functionSet: List[Pri
 def createFitnessCaseDict(features, inputs):
   return dict(zip(features, inputs))
 
+def getClass(result):
+
+  return 2 if result else 1
+
 @cache
 def calculateRawFitness(individual: Primitives.Node, fitnessCases: FitnessCases):
-  predictions = np.array([individual.evaluate(createFitnessCaseDict(fitnessCases.features.values, case)) for case in fitnessCases.inputs])
+  predictions = np.array([
+    getClass(individual.evaluate(createFitnessCaseDict(fitnessCases.features.values, case))) for case in fitnessCases.inputs
+  ])
   targetValues = np.array(fitnessCases.outputs)
 
   hitCount = sum([a == b for a,b in zip(predictions, targetValues)])
@@ -292,14 +297,14 @@ def calculateFitness(population: List[Primitives.Node], fitnessCases: FitnessCas
   else:
     return [calculateRawFitness(indiv, fitnessCases) for indiv in population]
 
-def printPopulationFitness(population: List[Primitives.Node], fitness = []):
+def printPopulationFitness(population: List[Primitives.Node], fitness = [], maxFitness = 0):
   """
   Print the expression each indivudual represents
   """
 
   i = 0
   for individual, fit in zip(population, fitness):
-    print(f'ind {i}: {fit} => {individual}')
+    print(f'ind {i}: {fit}/{maxFitness} => {individual}')
     i += 1
     print()
 
@@ -490,7 +495,7 @@ def evolveRegressor(gpParams: GP_Params, dataset = './hepatitis.tsv'):
 
   fitness = calculateFitness(population, fitnessCases_Train, FitnessMethod.RawFitness)
 
-  printPopulationFitness(population, fitness)
+  printPopulationFitness(population, fitness, len(fitnessCases_Train.inputs))
 
   # variety = calculatePopulationVariety(population)
   populationComplexity = []
@@ -506,7 +511,7 @@ def evolveRegressor(gpParams: GP_Params, dataset = './hepatitis.tsv'):
 
   # plotHistogram(complexity, "Initial population complexity Histogram", "Individual", 'Complexity', prefix=plotPrefix)
 
-  tournamentSize = 3
+  tournamentSize = 5
 
   fitness = calculateFitness(population, fitnessCases_Train, FitnessMethod.AdjustedFitness)
 
@@ -557,14 +562,14 @@ def evolveRegressor(gpParams: GP_Params, dataset = './hepatitis.tsv'):
     # print(f'Population Complexity = {complexity}')
     # print(f'Population Variety = {variety}')
     print(f'Best Individual = {bestIndiv} ;')
-    print(f'Best Individual Fitness = {bestIndivFitness} ;')
+    print(f'Best Individual Fitness = {bestIndivFitness};')
     print(f'Best Individual Accuracy = {bestIndivAccuracy} ;')
     print()
 
     population = newPopulation
 
-  # plotFitnessPerGeneration(populationFitness, title='Population fitness for each Generation', prefix=plotPrefix)
-  # plotFitnessPerGeneration(bestFitness, title='Fitness of the best individual in each Generation', prefix=plotPrefix)
+  plotFitnessPerGeneration(populationFitness, title='Population fitness for each Generation', prefix=plotPrefix)
+  plotFitnessPerGeneration(bestFitness, title='Fitness of the best individual in each Generation', prefix=plotPrefix)
   plotFitnessPerGeneration(bestAccuracy, title='Accuracy of the best individual for each Generation', prefix=plotPrefix)
 
   # plotHistogram(populationComplexity, 'Structural Complexity Histogram', 'Generations', 'Structural Complexity', prefix=plotPrefix)
@@ -613,9 +618,9 @@ if __name__ == '__main__':
     maxTreeDepth=6,
     minTreeDepth=3,
     crossoverRate=0.6,
-    mutationRate=0.2,
+    mutationRate=0.1,
     generations=50,
-    reproductionRate=0.2
+    reproductionRate=0.3
   )
 
   topIndividuals, topFitness = evolveRegressor(gpParams, dataset='hepatitis.tsv')

@@ -82,8 +82,12 @@ class IF_ELSE_THEN(Node):
     else:
       return ifFalse
     
-  def __str__(self):
-    return f'IF({self.arg1}) \n\tTHEN({self.arg2}) \n\tELSE({self.arg3})'
+  def __str__(self, depth=0):
+    condition = str(self.arg1)
+    ifTrue = str(self.arg2)
+    ifFalse = str(self.arg3)
+
+    return "IF({}) \n{}THEN({}) \n{}ELSE({})".format(condition, '\t' * depth, ifTrue, '\t' * depth, ifFalse)
 
 ############################################
 # Functions: Logic Operator Functions
