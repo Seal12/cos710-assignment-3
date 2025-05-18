@@ -107,12 +107,31 @@ def plotBarGraph(x_values: List, y_values: List, title: str, xLabel: str, yLabel
 ############################################
 # Population Helpers
 
-def createTerminal(value, min = 0, max = 100):
-  if value == 'C':
-    newValue = random.randint(min, max)
-    return Primitives.Const(newValue)
-  
-  return Primitives.Variable(value)
+def createTerminalPair(value):
+  if value == 'AGE':
+    newValue = random.randint(7, 78)
+    return Primitives.Variable(value), Primitives.Const(newValue)
+  elif value in ['SEX', 'ANTIVIRALS', 'HISTOLOGY']:
+    newValue = random.randint(1, 2)
+    return Primitives.Variable(value), Primitives.Const(newValue)
+  elif value == 'BILIRUBIN':
+    newValue = random.randint(0, 34)
+    return Primitives.Variable(value), Primitives.Const(newValue)
+  elif value == 'ALK PHOSPHATE':
+    newValue = random.randint(0, 83)
+    return Primitives.Variable(value), Primitives.Const(newValue)
+  elif value == 'SGOT':
+    newValue = random.randint(0, 84)
+    return Primitives.Variable(value), Primitives.Const(newValue)
+  elif value == 'ALBUMIN':
+    newValue = random.randint(0, 29)
+    return Primitives.Variable(value), Primitives.Const(newValue)
+  elif value == 'PROTIME':
+    newValue = random.randint(0, 44)
+    return Primitives.Variable(value), Primitives.Const(newValue)
+  else:
+    newValue = random.randint(0, 1)
+    return Primitives.Variable(value), Primitives.Const(newValue)
 
 def countTreeComplexity(tree: Primitives.Node):
   if tree == None:
@@ -196,12 +215,15 @@ def addUnique(uniqueTrees: set, tree):
   
   return False
 
-def generateFullTree(terminalSet: List[Primitives.Node], functionSet: List[Primitives.Node], depth):
-  if depth == 0:
+def generateFullTree(terminalSet: List[Primitives.Node], functionSet: List[Primitives.Node], depth, maxDepth = 1):
+  if depth == 1:
     value = random.choice(terminalSet)
-    treeNode = createTerminal(value)
+    treeNode, thresholdNode = createTerminalPair(value)
+
+    function: Primitives.Node = random.choice(functionSet[1:])
+    root = function(treeNode, thresholdNode)
     
-    return treeNode
+    return root
 
   function: Primitives.Node = random.choice(functionSet)
 
@@ -213,19 +235,21 @@ def generateFullTree(terminalSet: List[Primitives.Node], functionSet: List[Primi
 
   return root
 
-def generateGrowTree(terminalSet: List[Primitives.Node], functionSet: List[Primitives.Node], depth = 0):
-  if depth == 0:
-    valIndex = random.randint(0, len(terminalSet) - 1)
-    value = terminalSet[valIndex]
-    nodeValue = createTerminal(value)
+def generateGrowTree(terminalSet: List[Primitives.Node], functionSet: List[Primitives.Node], depth = 0, maxDepth = 1):
+  if depth == 1:
+    value = random.choice(terminalSet)
+    treeNode, thresholdNode = createTerminalPair(value)
+
+    function: Primitives.Node = random.choice(functionSet[1:])
+    root = function(treeNode, thresholdNode)
     
-    return nodeValue
+    return root
 
   function: Primitives.Node = random.choice(functionSet)
 
   childNodes = []
   for _ in range(function.arity):
-    randomDepth = random.randint(0, depth - 1)
+    randomDepth = random.randint(1, max(depth - 1, 1))
     childNodes.append(generateGrowTree(terminalSet, functionSet, randomDepth))
 
   root = function(*childNodes)
@@ -236,9 +260,9 @@ def generatePopulation(terminalSet: List[Primitives.Node], functionSet: List[Pri
   population = []
 
   if method == GenerationMetods.Full:
-    population.extend([generateFullTree(terminalSet, functionSet, maxDepth) for _ in range(populationSize)])
+    population.extend([generateFullTree(terminalSet, functionSet, maxDepth, maxDepth) for _ in range(populationSize)])
   elif method == GenerationMetods.Grow:
-    population.extend([generateGrowTree(terminalSet, functionSet, maxDepth) for _ in range(populationSize)])
+    population.extend([generateGrowTree(terminalSet, functionSet, maxDepth, maxDepth) for _ in range(populationSize)])
   else:
     treesPerDepth = math.floor(populationSize / (maxDepth - 1))
 
@@ -569,7 +593,7 @@ FUNCTION_SET = [
   Primitives.OROperator,
 ]
 
-TERMINAL_SET = ['AGE','SEX','STEROID','ANTIVIRALS','FATIGUE','MALAISE','ANOREXIA','LIVER BIG','LIVER FIRM','SPLEEN PALPABLE','SPIDERS','ASCITES', 'VARICES', 'BILIRUBIN', 'ALK PHOSPHATE', 'SGOT', 'ALBUMIN', 'PROTIME', 'HISTOLOGY','C']
+TERMINAL_SET = ['AGE','SEX','STEROID','ANTIVIRALS','FATIGUE','MALAISE','ANOREXIA','LIVER BIG','LIVER FIRM','SPLEEN PALPABLE','SPIDERS','ASCITES', 'VARICES', 'BILIRUBIN', 'ALK PHOSPHATE', 'SGOT', 'ALBUMIN', 'PROTIME', 'HISTOLOGY']
 
 parser = argparse.ArgumentParser(description='Argument parser for a structure-based GP')
 parser.add_argument('--seed', type=int, default=random.randint(0, 100), help='Psuedo-number generator seed.')
@@ -590,7 +614,7 @@ if __name__ == '__main__':
     terminalSet=TERMINAL_SET,
     functionSet=FUNCTION_SET,
     populationSize=100,
-    maxTreeDepth=6,
+    maxTreeDepth=7,
     minTreeDepth=3,
     crossoverRate=0.6,
     mutationRate=0.1,
