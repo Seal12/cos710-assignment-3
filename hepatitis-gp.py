@@ -596,6 +596,9 @@ FUNCTION_SET = [
 
 TERMINAL_SET = ['AGE','SEX','STEROID','ANTIVIRALS','FATIGUE','MALAISE','ANOREXIA','LIVER BIG','LIVER FIRM','SPLEEN PALPABLE','SPIDERS','ASCITES', 'VARICES', 'BILIRUBIN', 'ALK PHOSPHATE', 'SGOT', 'ALBUMIN', 'PROTIME', 'HISTOLOGY','C']
 
+FUNCTION_SET_ = ['AGE','SEX','STEROID','ANTIVIRALS','FATIGUE','MALAISE','ANOREXIA','LIVER BIG','LIVER FIRM','SPLEEN PALPABLE','SPIDERS','ASCITES', 'VARICES', 'BILIRUBIN', 'ALK PHOSPHATE', 'SGOT', 'ALBUMIN', 'PROTIME', 'HISTOLOGY','C']
+TERMINAL_SET_ = ['1', '2']
+
 parser = argparse.ArgumentParser(description='Argument parser for a structure-based GP')
 parser.add_argument('--seed', type=int, default=random.randint(0, 100), help='Psuedo-number generator seed.')
 
@@ -612,8 +615,8 @@ if __name__ == '__main__':
   startTime = time.time()
 
   gpParams = GP_Params(
-    terminalSet=TERMINAL_SET,
-    functionSet=FUNCTION_SET,
+    terminalSet=TERMINAL_SET_,
+    functionSet=FUNCTION_SET_,
     populationSize=100,
     maxTreeDepth=6,
     minTreeDepth=3,

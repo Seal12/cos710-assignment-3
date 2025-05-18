@@ -31,3 +31,9 @@ class FitnessMethod(Enum):
   RawFitness = 'raw-fitness'
   AdjustedFitness = 'adjusted-fitness'
   NormalisedFitness = 'normalised-fitness'
+
+
+class ConditionType(Enum):
+  LessThan = '<'
+  GreaterThan = '>'
+  Equal = '='
