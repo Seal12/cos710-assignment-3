@@ -31,3 +31,4 @@ class FitnessMethod(Enum):
   RawFitness = 'raw-fitness'
   AdjustedFitness = 'adjusted-fitness'
   NormalisedFitness = 'normalised-fitness'
+  HitsRatio = 'hits-ratio'
