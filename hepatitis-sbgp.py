@@ -617,9 +617,9 @@ if __name__ == '__main__':
     maxTreeDepth=7,
     minTreeDepth=3,
     crossoverRate=0.6,
-    mutationRate=0.1,
+    mutationRate=0.2,
     generations=50,
-    reproductionRate=0.3
+    reproductionRate=0.2
   )
 
   topIndividuals, topFitness = evolveRegressor(gpParams, dataset='hepatitis.tsv')
