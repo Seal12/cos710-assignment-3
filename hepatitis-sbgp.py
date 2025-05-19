@@ -207,27 +207,27 @@ def printPopulation(population: List[Primitives.Node]):
 ###############################################################
 # Population Methods
 
-def addUnique(uniqueTrees: set, tree):
-  tree_str = str(tree)
-  if tree_str not in uniqueTrees:
-      uniqueTrees.add(tree_str)
-      return True
-  
-  return False
+ComparisonFunctions = [
+  Primitives.EqualTo,
+  Primitives.GreaterOrEqalThan,
+  Primitives.GreaterThan,
+  Primitives.LessOrEqualThan,
+  Primitives.LessThan
+]
 
 def generateFullTree(terminalSet: List[Primitives.Node], functionSet: List[Primitives.Node], depth, maxDepth = 1):
   if depth == 1:
     value = random.choice(terminalSet)
     treeNode, thresholdNode = createTerminalPair(value)
 
-    function: Primitives.Node = random.choice(functionSet[1:])
+    function: Primitives.Node = random.choice(ComparisonFunctions)
     root = function(treeNode, thresholdNode)
     
     return root
 
   function: Primitives.Node = random.choice(functionSet)
-
   childNodes = []
+
   for _ in range(function.arity):
     childNodes.append(generateFullTree(terminalSet, functionSet, depth-1))
 
@@ -240,7 +240,7 @@ def generateGrowTree(terminalSet: List[Primitives.Node], functionSet: List[Primi
     value = random.choice(terminalSet)
     treeNode, thresholdNode = createTerminalPair(value)
 
-    function: Primitives.Node = random.choice(functionSet[1:])
+    function: Primitives.Node = random.choice(ComparisonFunctions)
     root = function(treeNode, thresholdNode)
     
     return root
@@ -298,6 +298,10 @@ def calculateHitsRatio(individual: Primitives.Node, fitnessCases: FitnessCases):
   hitCount = sum([a == b for a,b in zip(predictions, targetValues)])
 
   return hitCount / len(fitnessCases.outputs)
+
+def evaluateTreeStructure():
+  # TODO: implement
+  raise NotImplementedError
 
 def calculateFitness(population: List[Primitives.Node], fitnessCases: FitnessCases):
   return [calculateHitsRatio(indiv, fitnessCases) for indiv in population]
@@ -477,9 +481,9 @@ def calculatePopulationVariety(population: List[Primitives.Node]):
 # Genetic Algorithm: Regression
 ###############################################################
 
-def evolveRegressor(gpParams: GP_Params, dataset = './hepatitis.tsv'):
+def evolveRegressor(gpParams: GP_Params, dataset = './hepatitis.tsv', seed = 0):
 
-  plotPrefix = dataset.split('.')[0]
+  plotPrefix = dataset.split('.')[0] + '_' + str(seed)
 
   train, test  = getDataFrame(dataset)
 
@@ -601,9 +605,9 @@ parser.add_argument('--seed', type=int, default=random.randint(0, 100), help='Ps
 if __name__ == '__main__':
   args = parser.parse_args()
 
-  seed = args.seed
-  # random.seed(seed)
-  random.seed(82)
+  # seed = args.seed
+  seed = 3
+  random.seed(seed)
 
   print(f'Random Seed = {seed}')
 
@@ -618,13 +622,15 @@ if __name__ == '__main__':
     minTreeDepth=3,
     crossoverRate=0.6,
     mutationRate=0.2,
-    generations=50,
+    generations=100,
     reproductionRate=0.2
   )
 
-  topIndividuals, topFitness = evolveRegressor(gpParams, dataset='hepatitis.tsv')
+  topIndividuals, topFitness = evolveRegressor(gpParams, dataset='hepatitis.tsv', seed=seed)
 
   endTime = time.time()
   duration = round(endTime - startTime, 2)
   # printPopulationFitness(topIndividuals, topFitness)
+
+  print(f'Random Seed = {seed}')
   print(f'duration = {duration}')

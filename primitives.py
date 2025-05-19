@@ -1,5 +1,4 @@
-from typing import List, Dict
-import math
+from typing import Dict
 
 ############################################
 # Base class
@@ -106,13 +105,26 @@ class LogicOperator(Node):
 
     return nextIndex
 
+class NotOperator(LogicOperator):
+  arity = 1
+
+  def __init__(self, arg1: Node):
+    self.arg1 = arg1
+
+  def evaluate(self, fitnessCase):
+    self.eval = not self.arg1.evaluate(fitnessCase)
+    return self.eval
+  
+  def __str__(self):
+    return f'(!{self.arg1})'
+
 class AndOperator(LogicOperator):
   def evaluate(self, fitnessCase):
     self.eval = self.arg1.evaluate(fitnessCase) and self.arg2.evaluate(fitnessCase)
     return self.eval
   
   def __str__(self):
-    return f'({self.arg1}&&{self.arg2})'
+    return f'({self.arg1} && {self.arg2})'
 
 class OROperator(LogicOperator):
   def evaluate(self, fitnessCase):
@@ -120,9 +132,34 @@ class OROperator(LogicOperator):
     return self.eval
   
   def __str__(self):
-    return f'({self.arg1}||{self.arg2})'
+    return f'({self.arg1} || {self.arg2})'
 
-class EqualTo(LogicOperator):
+class XOROperator(LogicOperator):
+  def evaluate(self, fitnessCase):
+    self.eval = self.arg1.evaluate(fitnessCase) ^ self.arg2.evaluate(fitnessCase)
+    return self.eval
+  
+  def __str__(self):
+    return f'({self.arg1} ^ {self.arg2})'
+
+############################################
+# Functions: Comparison operator Functions
+
+class ComparisonOperator(Node):
+  arity = 2
+
+  def __init__(self, arg1: Node, arg2: Node):
+    self.arg1 = arg1
+    self.arg2 = arg2
+
+  def setIndex(self, index = 0):
+    self.index = index
+    nextIndex = self.arg1.setIndex(index + 1)
+    nextIndex = self.arg2.setIndex(nextIndex + 1)
+
+    return nextIndex
+
+class EqualTo(ComparisonOperator):
   def evaluate(self, fitnessCase):
     self.eval = self.arg1.evaluate(fitnessCase) == self.arg2.evaluate(fitnessCase)
     return self.eval
@@ -130,7 +167,7 @@ class EqualTo(LogicOperator):
   def __str__(self):
     return f'({self.arg1}=={self.arg2})'
 
-class LessThan(LogicOperator):
+class LessThan(ComparisonOperator):
   def evaluate(self, fitnessCase):
     self.eval = self.arg1.evaluate(fitnessCase) < self.arg2.evaluate(fitnessCase)
     return self.eval
@@ -138,7 +175,7 @@ class LessThan(LogicOperator):
   def __str__(self):
     return f'({self.arg1}<{self.arg2})'
 
-class LessOrEqualThan(LogicOperator):
+class LessOrEqualThan(ComparisonOperator):
   def evaluate(self, fitnessCase):
     self.eval = self.arg1.evaluate(fitnessCase) <= self.arg2.evaluate(fitnessCase)
     return self.eval
@@ -146,7 +183,7 @@ class LessOrEqualThan(LogicOperator):
   def __str__(self):
     return f'({self.arg1}<={self.arg2})'
 
-class GreaterThan(LogicOperator):
+class GreaterThan(ComparisonOperator):
   def evaluate(self, fitnessCase):
     self.eval = self.arg1.evaluate(fitnessCase) > self.arg2.evaluate(fitnessCase)
     return self.eval
@@ -154,7 +191,7 @@ class GreaterThan(LogicOperator):
   def __str__(self):
     return f'({self.arg1}>{self.arg2})'
 
-class GreaterOrEqalThan(LogicOperator):
+class GreaterOrEqalThan(ComparisonOperator):
   def evaluate(self, fitnessCase):
     self.eval = self.arg1.evaluate(fitnessCase) >= self.arg2.evaluate(fitnessCase)
     return self.eval
