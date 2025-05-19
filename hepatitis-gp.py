@@ -566,7 +566,7 @@ FUNCTION_SET = [
   Primitives.GreaterOrEqalThan,
   Primitives.LessThan,
   Primitives.LessOrEqualThan,
-  Primitives.OROperator,
+  Primitives.OROperator
 ]
 
 TERMINAL_SET = ['AGE','SEX','STEROID','ANTIVIRALS','FATIGUE','MALAISE','ANOREXIA','LIVER BIG','LIVER FIRM','SPLEEN PALPABLE','SPIDERS','ASCITES', 'VARICES', 'BILIRUBIN', 'ALK PHOSPHATE', 'SGOT', 'ALBUMIN', 'PROTIME', 'HISTOLOGY','C']

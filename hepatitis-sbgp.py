@@ -299,12 +299,35 @@ def calculateHitsRatio(individual: Primitives.Node, fitnessCases: FitnessCases):
 
   return hitCount / len(fitnessCases.outputs)
 
-def evaluateTreeStructure():
-  # TODO: implement
-  raise NotImplementedError
+def countTrivialComparisons(node):
+  """
+  Count trivial comparisons
+  """
+  trivialComparisons = 0
+
+  if isinstance(node, Primitives.Terminal):
+    return 0
+
+  if isinstance(node, Primitives.LogicOperator) or isinstance(node, Primitives.ComparisonOperator):
+    if isinstance(node.arg1, Primitives.Const) and isinstance(node.arg2, Primitives.Const):
+      return 1
+
+  if hasattr(node, "arg1"):
+    trivialComparisons += countTrivialComparisons(node.arg1)
+
+  if hasattr(node, "arg2"):
+    trivialComparisons += countTrivialComparisons(node.arg2)
+
+  if hasattr(node, "arg3"):
+    trivialComparisons += countTrivialComparisons(node.arg3)
+  
+  return trivialComparisons 
 
 def calculateFitness(population: List[Primitives.Node], fitnessCases: FitnessCases):
-  return [calculateHitsRatio(indiv, fitnessCases) for indiv in population]
+  penaltyWeight = 0.01
+  treeFitnessPairs = [(calculateHitsRatio(indiv, fitnessCases), countTrivialComparisons(indiv)) for indiv in population]
+
+  return [accuracy - (trivComp*penaltyWeight) for accuracy, trivComp in treeFitnessPairs]
 
 def printPopulationFitness(population: List[Primitives.Node], fitness = []):
   """
@@ -594,7 +617,7 @@ FUNCTION_SET = [
   Primitives.GreaterOrEqalThan,
   Primitives.LessThan,
   Primitives.LessOrEqualThan,
-  Primitives.OROperator,
+  Primitives.OROperator
 ]
 
 TERMINAL_SET = ['AGE','SEX','STEROID','ANTIVIRALS','FATIGUE','MALAISE','ANOREXIA','LIVER BIG','LIVER FIRM','SPLEEN PALPABLE','SPIDERS','ASCITES', 'VARICES', 'BILIRUBIN', 'ALK PHOSPHATE', 'SGOT', 'ALBUMIN', 'PROTIME', 'HISTOLOGY']
@@ -633,4 +656,4 @@ if __name__ == '__main__':
   # printPopulationFitness(topIndividuals, topFitness)
 
   print(f'Random Seed = {seed}')
-  print(f'duration = {duration}')
+  print(f'duration = {duration}s')

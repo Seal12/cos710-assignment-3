@@ -134,14 +134,6 @@ class OROperator(LogicOperator):
   def __str__(self):
     return f'({self.arg1} || {self.arg2})'
 
-class XOROperator(LogicOperator):
-  def evaluate(self, fitnessCase):
-    self.eval = self.arg1.evaluate(fitnessCase) ^ self.arg2.evaluate(fitnessCase)
-    return self.eval
-  
-  def __str__(self):
-    return f'({self.arg1} ^ {self.arg2})'
-
 ############################################
 # Functions: Comparison operator Functions
 
