@@ -66,7 +66,7 @@ def plotFitnessPerGeneration(generationFitnesses: List, title, prefix = ''):
   y_line = generationFitnesses
   ax.plot(x, y_line, marker='o', linestyle='solid', color='r', label='Fitness')
 
-  majorTicksSteps = round(numDataPoints/10)
+  majorTicksSteps = max(round(numDataPoints/10), 1)
   ax.xaxis.set_major_locator(MultipleLocator(majorTicksSteps))
 
   # Minor axis steps
@@ -604,7 +604,7 @@ def evolveRegressor(gpParams: GP_Params, dataset = './hepatitis.tsv', seed = 0):
 
   finalFitness = calculateFitness(population, fitnessCases_Test)
 
-  return population, finalFitness
+  return population, finalFitness, bestIndivFitness
 
 ###############################################################
 # Program
@@ -623,13 +623,13 @@ FUNCTION_SET = [
 TERMINAL_SET = ['AGE','SEX','STEROID','ANTIVIRALS','FATIGUE','MALAISE','ANOREXIA','LIVER BIG','LIVER FIRM','SPLEEN PALPABLE','SPIDERS','ASCITES', 'VARICES', 'BILIRUBIN', 'ALK PHOSPHATE', 'SGOT', 'ALBUMIN', 'PROTIME', 'HISTOLOGY']
 
 parser = argparse.ArgumentParser(description='Argument parser for a structure-based GP')
-parser.add_argument('--seed', type=int, default=random.randint(0, 100), help='Psuedo-number generator seed.')
+parser.add_argument('--seed', type=int, default=random.randint(100, 200), help='Psuedo-number generator seed.')
 
 if __name__ == '__main__':
   args = parser.parse_args()
 
-  # seed = args.seed
-  seed = 3
+  seed = args.seed
+  # seed = 3
   random.seed(seed)
 
   print(f'Random Seed = {seed}')
@@ -649,11 +649,13 @@ if __name__ == '__main__':
     reproductionRate=0.2
   )
 
-  topIndividuals, topFitness = evolveRegressor(gpParams, dataset='hepatitis.tsv', seed=seed)
+  topIndividuals, populationFitness, bestIndivFitness = evolveRegressor(gpParams, dataset='hepatitis.tsv', seed=seed)
 
   endTime = time.time()
   duration = round(endTime - startTime, 2)
   # printPopulationFitness(topIndividuals, topFitness)
 
+  print()
   print(f'Random Seed = {seed}')
   print(f'duration = {duration}s')
+  print(f'bestIndivFitness = {bestIndivFitness}')

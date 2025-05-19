@@ -1,11 +1,21 @@
-if [ -d "./runResults/" ]; then
-  mkdir runResults
-fi
+# rm -f runResults/* 
+mkdir -p runResults
 
-for _ in $(seq 1 10); do
+# Generate output files
+for _ in $(seq 1 5); do
   filename="./runResults/$RANDOM.txt"
   python3 hepatitis-sbgp.py > "$filename"
   echo "Saved output to $filename"
 done
 
-ls ./runResults/ | while read file; do   first_line=$(head -n 1 "./runResults/$file");   echo "$first_line $file"
+# Print header
+echo "\n"
+echo -e "File\tRandom Seed\tDuration\tBest Fitness"
+
+# Extract last three lines and format as a table
+ls ./runResults/ | while read file; do
+  seed=$(tail -n 3 "./runResults/$file" | grep "Random Seed" | awk -F '=' '{print $2}' | tr -d ' ')
+  duration=$(tail -n 3 "./runResults/$file" | grep "duration" | awk -F '=' '{print $2}' | tr -d ' ')
+  fitness=$(tail -n 3 "./runResults/$file" | grep "bestIndivFitness" | awk -F '=' '{print $2}' | tr -d ' ')
+  echo -e "$file\t$seed\t$duration\t$fitness"
+done
