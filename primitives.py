@@ -1,192 +1,223 @@
-from typing import Dict
+from numbers import Number
+from abc import abstractmethod
 
-############################################
-# Base class
+import random
+import copy
+
 
 class Node:
-  arity = 0
+  __fintess: Number
+  ret_type: str = 'float'
 
-  def evaluate(self, fitnessCase: Dict):
-    """Evaluate the expression given come fitness case."""
-    raise NotImplementedError
-  
-  def getEval(self):
-    if self.eval == None:
-      raise ValueError
-    
-    return self.eval
-
-  def setIndex(self, index = 0):
-    self.index = index
-    return index
-
-  def __str__(self):
-    """Return string of node"""
-    raise NotImplementedError
-  
-
-############################################
-# Terminals
-
-class Terminal(Node):
-
-  def setIndex(self, index = 0):
-    self.index = index
-    return index
-
-  def __str__(self):
-    return f'{self.value}'
-
-class Variable(Terminal):
-  def __init__(self, value: str):
-    self.value = value
-
-  def evaluate(self, fitnessCase):
-    self.eval = fitnessCase[self.value]
-    return self.eval
-
-class Const(Terminal):
   def __init__(self, value):
     self.value = value
 
-  def evaluate(self, _ = None, __ = None):
+  @abstractmethod
+  def eval(self, **kwargs):
+    pass
+
+  @property
+  def fitness(self):
+    return self.__fintess
+
+  @fitness.setter
+  def fitness(self, fitness: Number):
+    self.__fintess = fitness
+
+  @property
+  def node_count(self):
+    return 1
+
+  @property
+  def depth(self):
+    return 0
+
+  def get_subtree(self, index):
+    if index == 0:
+      return self
+    return None
+
+  def replace_subtree(self, index, new_node):
+    if index == 0:
+      return new_node
+    return self
+
+  def get_relative_depth(self, index, current_depth=0):
+    if index == 0:
+      return current_depth
+    return None
+
+  def copy(self):
+    return copy.deepcopy(self)
+
+##################################################################
+# Terminals
+##################################################################
+
+class Terminal(Node):
+  def __init__(self, value):
+    super().__init__(value)
+
+  def eval(self, **kwargs):
     return self.value
 
-############################################
-# Functions: Conditional Statement Functions
+  def __str__(self):
+    return str(self.value)
 
-class IF_ELSE_THEN(Node):
-  arity = 3
+class Variable(Terminal):
+  def __init__(self, value):
+    super().__init__(value)
 
-  def __init__(self, condition: Node, conditionTrue: Node, conditionFalse: Node):
-    self.arg1 = condition
-    self.arg2 = conditionTrue
-    self.arg3 = conditionFalse
+  def eval(self, **kwargs):
+    return kwargs.get(self.value, 0)
 
-  def setIndex(self, index = 0):
-    self.index = index
-    nextIndex = self.arg1.setIndex(index + 1)
-    nextIndex = self.arg2.setIndex(nextIndex + 1)
-    nextIndex = self.arg3.setIndex(nextIndex + 1)
+class Constant(Terminal):
+  def __init__(self):
+    const = random.random() * 0.4 - 0.2
+    super().__init__(round(const, 2))
 
-    return nextIndex
+ConstantValue = 'C'
 
-  def evaluate(self, fitnessCase):
-    condition = self.arg1.evaluate(fitnessCase)
-    ifTrue = self.arg2.evaluate(fitnessCase)
-    ifFalse = self.arg3.evaluate(fitnessCase)
 
-    if condition:
-      return ifTrue
-    else:
-      return ifFalse
+##################################################################
+# Functions
+##################################################################
+
+class Function(Node):
+  arity: int
+  arg_types: tuple = ('float', 'float')
+
+  def __init__(self, value, left, right):
+    self.value = value
+    self.left = left
+    self.right = right
+    self.arity = 2
+
+  @abstractmethod
+  def eval(self, **kwargs):
+    pass
+
+  @property
+  def node_count(self):
+    return 1 + self.left.node_count + self.right.node_count
+
+  @property
+  def depth(self):
+    return 1 + max(self.left.depth, self.right.depth)
+
+  def get_subtree(self, index):
+    if index == 0:
+      return self
     
-  def __str__(self, depth=0):
-    condition = str(self.arg1)
-    ifTrue = str(self.arg2)
-    ifFalse = str(self.arg3)
+    left_count = self.left.node_count
+    if index <= left_count:
+      return self.left.get_subtree(index - 1)
+    else:
+      return self.right.get_subtree(index - 1 - left_count)
 
-    return "IF({}) \n{}THEN({}) \n{}ELSE({})".format(condition, '\t' * depth, ifTrue, '\t' * depth, ifFalse)
+  def replace_subtree(self, index, new_node):
+    if index == 0:
+      return new_node
+    
+    left_count = self.left.node_count
+    if index <= left_count:
+      self.left = self.left.replace_subtree(index - 1, new_node)
+    else:
+      self.right = self.right.replace_subtree(index - 1 - left_count, new_node)
+    return self
 
-############################################
-# Functions: Logic Operator Functions
+  def get_relative_depth(self, index, current_depth=0):
+    if index == 0:
+      return current_depth
+    
+    left_count = self.left.node_count
+    if index <= left_count:
+      return self.left.get_relative_depth(index - 1, current_depth + 1)
+    else:
+      return self.right.get_relative_depth(index - 1 - left_count, current_depth + 1)
 
-class LogicOperator(Node):
-  arity = 2
+# Functions: BasisArithmetic 
+class BasisArithmetic(Function):
+  def __init__(self, value, left, right):
+    super().__init__(value, left, right)
+    self.arity = 2
 
-  def __init__(self, arg1: Node, arg2: Node):
-    self.arg1 = arg1
-    self.arg2 = arg2
+class Add(BasisArithmetic):
+  def __init__(self, left, right):
+    super().__init__("+", left, right)
 
-  def setIndex(self, index = 0):
-    self.index = index
-    nextIndex = self.arg1.setIndex(index + 1)
-    nextIndex = self.arg2.setIndex(nextIndex + 1)
+  def eval(self, **kwargs):
+    return self.left.eval(**kwargs) + self.right.eval(**kwargs)
 
-    return nextIndex
-
-class NotOperator(LogicOperator):
-  arity = 1
-
-  def __init__(self, arg1: Node):
-    self.arg1 = arg1
-
-  def evaluate(self, fitnessCase):
-    self.eval = not self.arg1.evaluate(fitnessCase)
-    return self.eval
-  
   def __str__(self):
-    return f'(!{self.arg1})'
+    return f"({self.left} + {self.right})"
 
-class AndOperator(LogicOperator):
-  def evaluate(self, fitnessCase):
-    self.eval = self.arg1.evaluate(fitnessCase) and self.arg2.evaluate(fitnessCase)
-    return self.eval
-  
+class Sub(BasisArithmetic):
+  def __init__(self, left, right):
+    super().__init__("-", left, right)
+
+  def eval(self, **kwargs):
+    return self.left.eval(**kwargs) - self.right.eval(**kwargs)
+
   def __str__(self):
-    return f'({self.arg1} && {self.arg2})'
+    return f"({self.left} - {self.right})"
 
-class OROperator(LogicOperator):
-  def evaluate(self, fitnessCase):
-    self.eval = self.arg1.evaluate(fitnessCase) or self.arg2.evaluate(fitnessCase)
-    return self.eval
-  
+class Mul(BasisArithmetic):
+  def __init__(self, left, right):
+    super().__init__("*", left, right)
+
+  def eval(self, **kwargs):
+    return self.left.eval(**kwargs) * self.right.eval(**kwargs)
+
   def __str__(self):
-    return f'({self.arg1} || {self.arg2})'
+    return f"({self.left} * {self.right})"
 
-############################################
-# Functions: Comparison operator Functions
 
-class ComparisonOperator(Node):
-  arity = 2
+class Div(BasisArithmetic):
+  def __init__(self, left, right):
+    super().__init__("/", left, right)
 
-  def __init__(self, arg1: Node, arg2: Node):
-    self.arg1 = arg1
-    self.arg2 = arg2
+  def eval(self, **kwargs):
+    rightValue = self.right.eval(**kwargs)
+    if rightValue == 0:
+      return 1
 
-  def setIndex(self, index = 0):
-    self.index = index
-    nextIndex = self.arg1.setIndex(index + 1)
-    nextIndex = self.arg2.setIndex(nextIndex + 1)
+    return self.left.eval(**kwargs) / rightValue
 
-    return nextIndex
-
-class EqualTo(ComparisonOperator):
-  def evaluate(self, fitnessCase):
-    self.eval = self.arg1.evaluate(fitnessCase) == self.arg2.evaluate(fitnessCase)
-    return self.eval
-  
   def __str__(self):
-    return f'({self.arg1}=={self.arg2})'
+    return f"({self.left} / {self.right})"
 
-class LessThan(ComparisonOperator):
-  def evaluate(self, fitnessCase):
-    self.eval = self.arg1.evaluate(fitnessCase) < self.arg2.evaluate(fitnessCase)
-    return self.eval
-  
-  def __str__(self):
-    return f'({self.arg1}<{self.arg2})'
+# Functions: ThresholdArithmetic
 
-class LessOrEqualThan(ComparisonOperator):
-  def evaluate(self, fitnessCase):
-    self.eval = self.arg1.evaluate(fitnessCase) <= self.arg2.evaluate(fitnessCase)
-    return self.eval
-  
-  def __str__(self):
-    return f'({self.arg1}<={self.arg2})'
+class Max(BasisArithmetic):
+  def __init__(self, left, right):
+    super().__init__("max", left, right)
 
-class GreaterThan(ComparisonOperator):
-  def evaluate(self, fitnessCase):
-    self.eval = self.arg1.evaluate(fitnessCase) > self.arg2.evaluate(fitnessCase)
-    return self.eval
-  
-  def __str__(self):
-    return f'({self.arg1}>{self.arg2})'
+  def eval(self, **kwargs):
+    return max(self.left.eval(**kwargs), self.right.eval(**kwargs))
 
-class GreaterOrEqalThan(ComparisonOperator):
-  def evaluate(self, fitnessCase):
-    self.eval = self.arg1.evaluate(fitnessCase) >= self.arg2.evaluate(fitnessCase)
-    return self.eval
-  
   def __str__(self):
-    return f'(({self.arg1}>={self.arg2})'
+    return f"max({self.left}, {self.right})"
+  
+class Min(BasisArithmetic):
+  def __init__(self, left, right):
+    super().__init__("min", left, right)
+
+  def eval(self, **kwargs):
+    return min(self.left.eval(**kwargs), self.right.eval(**kwargs))
+
+  def __str__(self):
+    return f"min({self.left}, {self.right})"
+
+# Functions: StructuredRoot
+class StructuredRoot(Function):
+  def __init__(self, left, right):
+    super().__init__("StructuredNode", left, right)
+    self.ret_type = 'prediction'
+    self.arg_types = ('float', 'float')
+
+  def eval(self, **kwargs):
+    return self.left.eval(**kwargs) + self.right.eval(**kwargs)
+
+  def __str__(self):
+    return f"StructuredRoot({self.left} + {self.right})"
