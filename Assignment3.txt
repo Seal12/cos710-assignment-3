@@ -1,0 +1,37 @@
+COS 710: Artificial Intelligence
+Assignment 3: Structure-Based Grammatical Evolution for
+Regression
+Due Date: 24 May, 23:30
+This assignment involves implementing structure-based grammatical evolution to predict the electricity load for a specific time on a particular
+day given the data for the n previous days at the same time or alternatively the m previous values can be used. The problem is a time series
+problem. The dataset can be accessed from https://drive.google.com/
+drive/folders/1q9JxS7Gy-Fyk0dAl6zWEquMjl1F0fhXM?usp=sharing.
+Assignments must be submitted via clickUP. The source code, compiled code
+and report must be submitted. Please note that the assignment can only be
+coded in Java, C++ or Python.
+The report must include:
+• Description of the data set .
+• Description of the performance metric used to assess the quality of the
+predictor.
+• Description of how structure is incorporated into canonical GE.
+• Description of the grammar used.
+• Description of initial population generation.
+• Description of the fitness function and fitness evaluation.
+• Description of the selection method.
+• Description of genetic operators
+
+1
+
+• A description of the experimental setup, i.e. parameter values used,
+technical specifications of the machine used to develop the program
+and run simulations.
+• The results (averages, standard deviation and best value over the runs
+performed) and a discussion of the results. A minimum of 10 runs
+should be performed.
+• Runtimes of the algorithm.
+• Comparison of the results with Assignment 1 and Assignment 2.
+Total: 50
+
+2
+
+
