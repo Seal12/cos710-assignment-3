@@ -24,7 +24,7 @@ pip install pandas numpy matplotlib
 You can run the simulation using the following command:
 
 ```bash
-python3 gp.py --pop-size 100 --gens 70 --window-size 30
+python3 sbge.py --pop-size 100 --gens 70 --window-size 30
 ```
 
 ### Running with Docker
@@ -63,7 +63,7 @@ You can also run the simulation within an isolated container:
 If you have `PyInstaller` installed in your virtual environment, use the following command to build a standalone executable:
 
 ```bash
-python3 -m PyInstaller --onefile gp.py
+python3 -m PyInstaller --onefile sbge.py
 ```
 The resulting binary will be located in the `dist/` directory.
 
@@ -76,7 +76,7 @@ All experimental outputs are stored in the `out/` directory:
 
 ## Project Structure
 
-- `gp.py`: Main entry point and evolutionary logic.
+- `sbge.py`: Main entry point and evolutionary logic.
 - `primitives.py`: Definition of function sets (+, -, *, /, min, max) and terminal nodes.
 - `utils/logger.py`: Custom logging and progress monitoring.
 - `data/`: Directory containing the UK Residential Energy Dataset.
