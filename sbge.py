@@ -372,7 +372,7 @@ def raw_fitness(tree, data):
     return sum_error / total_rows
 
 
-def _eval_worker(args):
+def eval_worker(args):
     idx, individual, cases = args
     indivError = raw_fitness(individual, cases)
     return idx, indivError
@@ -387,7 +387,7 @@ def calculate_fitness(pop, cases):
         args_list = [(i, ind, cases) for i, ind in enumerate(pop)]
         total_evals = len(pop)
         for count, (idx, indivError) in enumerate(
-            executor.map(_eval_worker, args_list), 1
+            executor.map(eval_worker, args_list), 1
         ):
             pop[idx].fitness = indivError
             fitness_results[idx] = indivError
@@ -597,6 +597,7 @@ if __name__ == "__main__":
     print(args)
     random.seed(args.seed)
     history = []
+    start_time = time.time()
 
     data = load_data("data/Residential_Energy_Dataset_UK- 2014-2020.csv", lag_hours=2)
 
@@ -613,7 +614,6 @@ if __name__ == "__main__":
     metrics = create_matric(0, fitness, pop)
     history.append(metrics)
 
-    start_time = time.time()
     for i in range(args.gens - 1):
         Logger.info(f"Generation {i + 1}:")
 
