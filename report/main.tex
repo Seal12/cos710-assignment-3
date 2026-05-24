@@ -230,51 +230,51 @@
             \hline
             \textbf{Run NO.} & \textbf{Random seed} & \textbf{Best Individual (MAPE)}  \\
             \hline
-             1 & 30 & $0.1889$ \\
+             1 & 35 & $0.1996$ \\
             \hline
-             2 & 45 & $0.1922$ \\
+             2 & 83 & $0.2008$ \\
             \hline
-             3 & 83 & $0.1924$ \\
+             3 & 75 & $0.2101$ \\
             \hline
-             4 & 51 & $0.1887$ \\
+             4 & 97 & $0.2107$ \\
             \hline
-             5 & 48 & $0.1872$ \\
+             5 & 14 & $0.2146$ \\
             \hline
-             6 & 84 & $0.1898$ \\
+             6 & 40 & $0.2150$ \\
             \hline
-             7 & 1 & $0.1887$ \\
+             7 & 66 & $0.2160$ \\
             \hline
-             8 & 20 & $0.1889$ \\
+             8 & 36 & $0.2187$ \\
             \hline
-             9 & 70 & $0.1918$ \\
+             9 & 89 & $0.2258$ \\
             \hline
-             10 & 12 & $0.2015$ \\
+             10 & 47 & $0.2348$ \\
              \hline
-             \multicolumn{2}{|c|}{mean} & $0.1910$ \\
+             \multicolumn{2}{|c|}{mean} & $0.2146$ \\
              \hline
-             \multicolumn{2}{|c|}{Std. Div} & $0.0041$ \\
+             \multicolumn{2}{|c|}{Std. Div} & $0.0100$ \\
              \hline
         \end{tabular}
         \caption{Execution results for the best 10 runs}
         \label{tab:results}
     \end{table}
 
-    As shown in Table \ref{tab:results}, across 10 independent experimental runs, the best individual consistently achieved a MAPE between \textbf{18.7\%} and \textbf{20.1\%}. The mean across all runs is \textbf{19.10\%}, with a narrow standard deviation of \textbf{0.41\%}, highlighting the algorithm's robustness to random seed initializations.
+    As shown in Table \ref{tab:results}, across 10 independent experimental runs, the best individual consistently achieved a MAPE between \textbf{19.96\%} and \textbf{23.48\%}. The mean across all runs is \textbf{21.46\%}, with a narrow standard deviation of \textbf{1.00\%}, highlighting the algorithm's robustness across multiple independent runs with different random seeds.
 
-    The best individual across all runs was found in \textbf{Run 5 (Seed 48)}, with a MAPE of \textbf{18.72\%}. The evolved phenotype heavily utilizes recursive minimum and maximum structures to model peak loads. Figure \ref{fig:best_indiv_48} illustrates this tree.
-    \\
-    \begin{figure}
-        \centering
-        \includegraphics[width=0.95\linewidth]{48_best_indiv.png}
-        \caption{Binary Expression Tree of the best individual from run 5, using 48 as random seed.}
-        \label{fig:best_indiv_48}
-    \end{figure}
-    \\
-    Due to the online sliding window, the algorithm experiences minor dataset shock at the start of each generation. However, the average and worst errors converge sharply as shown in Figure \ref{fig:gp_fitness_evolution}, crashing downward from extreme generation-0 outliers and squeezing tightly against the elite baseline.
+    The best individual across all runs was found in \textbf{Run 1 (Seed 35)}, with a MAPE of \textbf{19.96\%}. The evolved phenotype heavily utilizes nested arithmetic and variable structures to model peak loads. Figure \ref{fig:best_indiv_35} illustrates this tree.
     \\
     \begin{figure}[!ht]
         \centering
-        \includegraphics[width=0.98\linewidth]{20260420_001330_gp_fitness_48.png}
+        \includegraphics[width=0.95\linewidth]{35_individual_tree.png}
+        \caption{Binary Expression Tree of the best individual from run 1, using 35 as random seed.}
+        \label{fig:best_indiv_35}
+    \end{figure}
+    
+    Due to the online sliding window, the algorithm experiences minor dataset shock at the start of each generation. However, the average and worst errors converge sharply as shown in Figure \ref{fig:gp_fitness_evolution}, crashing downward from extreme generation-0 outliers and squeezing tightly against the elite baseline.
+    
+    \begin{figure}[!ht]
+        \centering
+        \includegraphics[width=0.98\linewidth]{20260524_200715_gp_fitness_35.png}
         \caption{Evolution of population fitness over generations.}
         \label{fig:gp_fitness_evolution}
     \end{figure}
@@ -283,7 +283,7 @@
   
     \begin{figure}[!ht]
         \centering
-        \includegraphics[width=0.95\linewidth]{20260420_001331_gp_best_fitness_48.png}
+        \includegraphics[width=0.95\linewidth]{20260524_200715_gp_best_fitness_35.png}
         \caption{Evolution of best individual's fitness per generation.}
         \label{fig:gp_best_fitness_evolution}
     \end{figure}
@@ -291,45 +291,45 @@
 \section{Run times}
     To ensure computational scalability across the 5.7 years of temporal data, the fitness evaluation pipeline was fully refactored to utilize asynchronous multiprocessing, distributing the load of evaluating 100 individuals across all available CPU cores.
 
-    Across the 10 experimental runs, processing 70 generations took between \textbf{967.21 seconds} (16.1 minutes) and \textbf{1,402.03 seconds} (23.3 minutes). On average, a complete traversal of the 201,596-row dataset took roughly \textbf{20.5 minutes}.
+    Across the 10 experimental runs, processing 70 generations took between \textbf{870.32 seconds} (14.5 minutes) and \textbf{951.00 seconds} (15.8 minutes). On average, a complete traversal of the 201,596-row dataset took roughly \textbf{15.0 minutes}.
 
     \begin{table}[h]
         \centering
-        \begin{tabular}{|c|c|}
+        \begin{tabular}{|c|c|c|}
             \hline
-            \textbf{Run NO.} & \textbf{Execution Time (Seconds) }  \\
+            \textbf{Run NO.} & \textbf{Random seed} & \textbf{Execution Time (Seconds)}  \\
             \hline
-             1 & 1370.14 \\
+             1 & 35 & 888.09 \\
             \hline
-             2 & 1350.28 \\
+             2 & 83 & 923.20 \\
             \hline
-             3 & 1369.35 \\
+             3 & 75 & 924.04 \\
             \hline
-             4 & 1379.87 \\
+             4 & 97 & 951.00 \\
             \hline
-             5 & 1378.09 \\
+             5 & 14 & 884.55 \\
             \hline
-             6 & 1402.03 \\
+             6 & 40 & 872.59 \\
             \hline
-             7 & 1088.77 \\
+             7 & 66 & 870.32 \\
             \hline
-             8 & 1056.39 \\
+             8 & 36 & 883.82 \\
             \hline
-             9 & 985.40  \\
+             9 & 89 & 876.71 \\
             \hline
-             10 & 967.21 \\
+             10 & 47 & 901.02 \\
               \hline
               \hline
-              \textbf{mean} & 1234.75 \\
+              \multicolumn{2}{|c|}{\textbf{mean}} & 897.53 \\
               \hline
-              \textbf{Std. Div} & 184.47 \\
+              \multicolumn{2}{|c|}{\textbf{Std. Div}} & 25.44 \\
               \hline
         \end{tabular}
         \caption{Execution results for the best 10 runs}
         \label{tab:runtimes}
     \end{table}
 
-    The run times shown in Table \ref{tab:runtimes} prove that the algorithm successfully balances structural complexity with processing speed, maintaining a relatively lean tree architecture (Max Depth = 5) while computing tens of millions of mathematical operations across the feature set. The overall mean execution time of \textbf{1234.75 seconds} (approximately 20.5 minutes) demonstrates highly efficient traversal of the 5.7-year dataset. The standard deviation of \textbf{184.47 seconds} (roughly ±3 minutes) indicates that while the computational load is highly stable, it naturally fluctuates depending on the specific random seed. This variance is expected in Genetic Programming, as seeds that organically evolve structurally denser, mathematically heavy equations early in the simulation will require more CPU cycles to process across the dataset than seeds that converge upon leaner, shallower equations.
+    The run times shown in Table \ref{tab:runtimes} prove that the algorithm successfully balances structural complexity with processing speed, maintaining a relatively lean tree architecture (Max Depth = 5) while computing tens of millions of mathematical operations across the feature set. The overall mean execution time of \textbf{897.53 seconds} (approximately 15.0 minutes) demonstrates highly efficient traversal of the 5.7-year dataset. The standard deviation of \textbf{25.44 seconds} indicates that the computational load is extremely stable across different random seeds, successfully mitigating the extreme processing variances commonly caused by uncontrolled tree bloat.
 
 \section{Comparison of Previous Assignments}
 
@@ -344,6 +344,18 @@
         The grammar serves as an absolute structural blueprint. It explicitly enforces the order of operations, prevents mathematical type mismatches, and restricts the search space exclusively to valid equations. Because crossover and mutation occur on the flat integer lists, the genetic operators are completely agnostic to the phenotype structure. 
         
         However, the integrity of the resulting phenotype is mathematically guaranteed by the CFG during the decoding phase. This strict, decoupled structure mitigates the destructive crossover events seen in Assignment 1 and eliminates the need for expensive morphological similarity calculations seen in Assignment 2, all while preserving the mathematical interpretability of the evolved models.
+
+    \subsection{Comparison of Execution Metrics and Performance}
+        The architectural differences between the three assignments directly impacted their convergence accuracy and computational efficiency.
+        
+        \textbf{Computational Efficiency and Run Times:} 
+        Assignment 1 (Standard GP) suffered from unconstrained code growth (bloat) and expensive direct tree recombinations. It required approximately 12 to 13 minutes to simulate just 20 generations. Scaled to the 70 generations used in later assignments, it would be highly inefficient.
+        Assignment 2 (Structure-Based GP) solved the bloat issue by introducing morphological similarity tracking (Global and Local Indices). While this allowed the system to simulate 70 generations in an average of \textbf{20.5 minutes}, the recursive tree-comparison algorithms introduced significant overhead.
+        Assignment 3 (Standard GE) proved to be the most computationally efficient architecture, completing 70 generations in a mean time of just \textbf{15.0 minutes}. By shifting genetic operations (crossover and mutation) to flat integer arrays rather than recursive tree structures, the genetic operators execute in linear time. The CFG parsing naturally handles validity, completely eliminating the need for the heavy similarity indices of Assignment 2.
+
+        \textbf{Predictive Accuracy (MAPE):} 
+        Because Assignment 1 utilized Mean Squared Error (MSE), its raw fitness values cannot be directly compared to the latter iterations. However, Assignments 2 and 3 both utilize the Mean Absolute Percentage Error (MAPE) under identical tumbling window constraints. 
+        Assignment 2 achieved a slightly superior mean MAPE of \textbf{19.10\%}, whereas Assignment 3 achieved \textbf{21.46\%}. This minor regression in accuracy is a known trade-off of Grammatical Evolution. Because GE utilizes an indirect genotype-to-phenotype mapping via modulo operations, a single point mutation in the integer array can drastically alter the decoding pathway of all subsequent codons (the ripple effect). This makes fine-tuning (exploitation) slightly harder in GE than in the direct tree-based mutations of Structure-Based GP, resulting in a marginally higher final error rate despite the massive gains in execution speed and structural safety.
 
 \begin{thebibliography}{9}
 
