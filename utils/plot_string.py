@@ -41,8 +41,8 @@ def plot_individual(genotype: list, output_filename: str = "tree_plot.png") -> N
     n = len(genotype)
 
     depth = tree.depth
-    width = min(100, max(10, (2 ** depth) * 0.8))
-    height = min(50, max(6, (depth + 1) * 1.5))
+    width = min(150, max(15, (2**depth) * 2.0))
+    height = min(50, max(8, (depth + 1) * 2.0))
 
     fig, ax = plt.subplots(figsize=(width, height))
     ax.axis("off")
@@ -52,13 +52,16 @@ def plot_individual(genotype: list, output_filename: str = "tree_plot.png") -> N
         if hasattr(node, "left") and hasattr(node, "right"):
             ax.plot([x, x - dx], [y, y - dy], "k-", lw=1.5, zorder=1)
             ax.plot([x, x + dx], [y, y - dy], "k-", lw=1.5, zorder=1)
-            draw_node(node.left,  x - dx, y - dy, dx / 2, dy)
+            draw_node(node.left, x - dx, y - dy, dx / 2, dy)
             draw_node(node.right, x + dx, y - dy, dx / 2, dy)
 
         label = str(node.value) if hasattr(node, "value") else str(node)
         ax.text(
-            x, y, label,
-            ha="center", va="center",
+            x,
+            y,
+            label,
+            ha="center",
+            va="center",
             bbox=dict(facecolor="lightblue", edgecolor="black", boxstyle="round,pad=1"),
             fontsize=12,
             zorder=2,
@@ -69,9 +72,12 @@ def plot_individual(genotype: list, output_filename: str = "tree_plot.png") -> N
     # ── Genotype annotation ─────────────────────────────────────────────
     gt_label = f"Genotype ({n} codons): {genotype}"
     fig.text(
-        0.5, 0.01, gt_label,
-        ha="center", va="bottom",
-        fontsize=9,
+        0.5,
+        0.01,
+        gt_label,
+        ha="center",
+        va="bottom",
+        fontsize=14,
         wrap=True,
         bbox=dict(facecolor="lightyellow", edgecolor="grey", boxstyle="round,pad=0.5"),
     )
