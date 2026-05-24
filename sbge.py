@@ -372,12 +372,27 @@ def print_population(pop, fitness=None):
 ##########################################
 
 
+def has_variable(node):
+    if node is None:
+        return False
+    if isinstance(node, Primitives.Variable):
+        return True
+    if hasattr(node, "left") and hasattr(node, "right"):
+        return has_variable(node.left) or has_variable(node.right)
+    return False
+
+
 def raw_fitness(tree, data):
     """Calculates the Mean Absolute Percentage Error (MAPE) of the tree on the given data."""
     if tree.phenotype is None:
         tree.decode()
     if tree.phenotype is None:
         return 1e9
+
+    if not has_variable(tree.phenotype):
+        return (
+            1.0  # Structural penalty: actively penalize trees with no dynamic variables
+        )
 
     sum_error = 0
     target_col = "Electricity_load"
