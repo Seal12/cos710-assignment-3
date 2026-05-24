@@ -207,27 +207,32 @@ def create_matric(generation: int, fitness: list[float], pop: list[Primitives.No
     return metrics
 
 
-def plot_tree(tree: Primitives.Node, seed: int):
+def plot_individual(individual: Primitives.Individual, seed: int):
     """
-    Plots an individual tree and saves it as a PNG.
+    Plots an individual as a single figure:
+      - The phenotype expression tree.
+      - Genotype codon array printed as a text annotation below the tree.
     """
-    depth = tree.depth
-    width = min(100, max(10, (2**depth) * 0.8))
-    height = min(50, max(6, (depth + 1) * 1.5))
+    tree = individual.phenotype
+    genotype = individual.genotype
+    n = len(genotype)
 
-    fig, ax = plt.subplots(figsize=(width, height))
+    depth = tree.depth
+    tree_width = min(100, max(10, (2**depth) * 0.8))
+    tree_height = min(50, max(6, (depth + 1) * 1.5))
+
+    fig, ax = plt.subplots(figsize=(tree_width, tree_height))
     ax.axis("off")
+    ax.set_title(f"Phenotype: {tree}", fontsize=11, pad=10, wrap=True)
 
     def draw_node(node, x, y, dx, dy):
         if hasattr(node, "left") and hasattr(node, "right"):
             ax.plot([x, x - dx], [y, y - dy], "k-", lw=1.5, zorder=1)
             ax.plot([x, x + dx], [y, y - dy], "k-", lw=1.5, zorder=1)
-
             draw_node(node.left, x - dx, y - dy, dx / 2, dy)
             draw_node(node.right, x + dx, y - dy, dx / 2, dy)
 
         label = str(node.value) if hasattr(node, "value") else str(node)
-
         ax.text(
             x,
             y,
@@ -239,14 +244,27 @@ def plot_tree(tree: Primitives.Node, seed: int):
             zorder=2,
         )
 
-    draw_node(tree, 0, 0, width / 2, 1)
+    draw_node(tree, 0, 0, tree_width / 2, 1)
 
+    # ── Genotype annotation ─────────────────────────────────────────────
+    gt_label = f"Genotype ({n} codons): {genotype}"
+    fig.text(
+        0.5,
+        0.01,
+        gt_label,
+        ha="center",
+        va="bottom",
+        fontsize=9,
+        wrap=True,
+        bbox=dict(facecolor="lightyellow", edgecolor="grey", boxstyle="round,pad=0.5"),
+    )
+
+    # ── Save ────────────────────────────────────────────────────────────
     out_dir = "out/trees"
     if not os.path.exists(out_dir):
         os.makedirs(out_dir)
 
     filename = f"{out_dir}/{seed}_individual_tree.png"
-
     plt.savefig(filename, bbox_inches="tight")
     plt.close()
     Logger.info(f"Individual tree plot saved to {filename}")
@@ -305,6 +323,7 @@ def generate_random_individual(target_depth, method):
     derive("<root>", 0)
     ind = Individual(genotype)
     ind.decode()
+
     return ind
 
 
@@ -326,6 +345,7 @@ def init_pop(pop_size, max_depth, gen_method: str = "ramped-half-and-half"):
     else:
         for _ in range(pop_size):
             pop.append(generate_random_individual(max_depth, gen_method))
+
     return pop
 
 
@@ -709,7 +729,7 @@ if __name__ == "__main__":
     plot_metrics(history, seed=args.seed)
     plot_best_fitness(history, seed=args.seed)
     plot_structural_metrics(history, seed=args.seed)
-    plot_tree(best_indiv.phenotype, seed=args.seed)
+    plot_individual(best_indiv, seed=args.seed)
 
     results_dir = "out/results"
     os.makedirs(results_dir, exist_ok=True)

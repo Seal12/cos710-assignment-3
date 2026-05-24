@@ -1,87 +1,111 @@
-import ast
+"""
+plot_string.py  —  Decode a Standard GE genotype and plot the phenotype tree.
+
+Usage:
+    python3 utils/plot_string.py "12,138,227,91,217,16,24,138,188,53,104"
+    python3 utils/plot_string.py "12,138,227,91" --output out/my_tree.png
+"""
+
 import argparse
+import os
+import sys
+
 import matplotlib.pyplot as plt
 
-class Node:
-    def __init__(self, value, left=None, right=None):
-        self.value = value
-        self.left = left
-        self.right = right
+# Allow importing primitives from the parent directory
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+import primitives as Primitives  # noqa: E402
 
-    @property
-    def depth(self):
-        left_d = self.left.depth if self.left else 0
-        right_d = self.right.depth if self.right else 0
-        return 1 + max(left_d, right_d)
 
-def ast_to_node(ast_node):
-    if isinstance(ast_node, ast.Call):
-        func_name = ast_node.func.id if isinstance(ast_node.func, ast.Name) else str(ast_node.func)
-        if len(ast_node.args) == 2:
-            return Node(func_name, ast_to_node(ast_node.args[0]), ast_to_node(ast_node.args[1]))
-        elif len(ast_node.args) == 1:
-            return Node(func_name, ast_to_node(ast_node.args[0]))
-        else:
-            return Node(func_name)
-    elif isinstance(ast_node, ast.BinOp):
-        op_map = {
-            ast.Add: '+', ast.Sub: '-', ast.Mult: '*', ast.Div: '/',
-        }
-        op = op_map.get(type(ast_node.op), str(type(ast_node.op)))
-        return Node(op, ast_to_node(ast_node.left), ast_to_node(ast_node.right))
-    elif isinstance(ast_node, ast.Name):
-        name = ast_node.id
-        if name.startswith('load_t_'):
-            name = name.replace('load_t_', 'load_t-')
-        return Node(name)
-    elif isinstance(ast_node, ast.Constant):
-        return Node(str(ast_node.value))
-    else:
-        return Node(type(ast_node).__name__)
+def plot_individual(genotype: list, output_filename: str = "tree_plot.png") -> None:
+    """
+    Decode a flat GE genotype into its phenotype expression tree and save a plot.
 
-def plot_tree_string(expr_str, output_filename="tree_plot.png"):
-    safe_expr = expr_str.replace('load_t-', 'load_t_')
-    
-    try:
-        tree_ast = ast.parse(safe_expr, mode='eval').body
-        root = ast_to_node(tree_ast)
-    except SyntaxError as e:
-        print(f"Failed to parse expression: {e}")
-        return
+    The figure contains:
+      - The phenotype expression tree (top).
+      - A text annotation with the codon count and flat genotype array (bottom).
 
-    depth = root.depth
+    Args:
+        genotype:        List of integer codons (0-255).
+        output_filename: Path to save the output PNG image.
+    """
+    individual = Primitives.Individual(genotype)
+    individual.decode()
+
+    if individual.phenotype is None:
+        print("Error: genotype could not be decoded into a valid phenotype.")
+        print("  This may be caused by exceeding the wrap-around or node limits.")
+        sys.exit(1)
+
+    tree = individual.phenotype
+    n = len(genotype)
+
+    depth = tree.depth
     width = min(100, max(10, (2 ** depth) * 0.8))
     height = min(50, max(6, (depth + 1) * 1.5))
-    
+
     fig, ax = plt.subplots(figsize=(width, height))
-    ax.axis('off')
-    
+    ax.axis("off")
+    ax.set_title(f"Phenotype: {tree}", fontsize=11, pad=10, wrap=True)
+
     def draw_node(node, x, y, dx, dy):
-        if node.left and node.right:
-            ax.plot([x, x - dx], [y, y - dy], 'k-', lw=1.5, zorder=1)
-            ax.plot([x, x + dx], [y, y - dy], 'k-', lw=1.5, zorder=1)
-            draw_node(node.left, x - dx, y - dy, dx / 2, dy)
+        if hasattr(node, "left") and hasattr(node, "right"):
+            ax.plot([x, x - dx], [y, y - dy], "k-", lw=1.5, zorder=1)
+            ax.plot([x, x + dx], [y, y - dy], "k-", lw=1.5, zorder=1)
+            draw_node(node.left,  x - dx, y - dy, dx / 2, dy)
             draw_node(node.right, x + dx, y - dy, dx / 2, dy)
-        elif node.left:
-            ax.plot([x, x], [y, y - dy], 'k-', lw=1.5, zorder=1)
-            draw_node(node.left, x, y - dy, dx / 2, dy)
-            
-        ax.text(x, y, str(node.value), ha='center', va='center',
-            bbox=dict(facecolor='lightblue', edgecolor='black', boxstyle='round,pad=1'),
+
+        label = str(node.value) if hasattr(node, "value") else str(node)
+        ax.text(
+            x, y, label,
+            ha="center", va="center",
+            bbox=dict(facecolor="lightblue", edgecolor="black", boxstyle="round,pad=1"),
             fontsize=12,
-            zorder=2
+            zorder=2,
         )
 
-    draw_node(root, 0, 0, width / 2, 1)
-    
-    plt.savefig(output_filename, bbox_inches='tight')
+    draw_node(tree, 0, 0, width / 2, 1)
+
+    # ── Genotype annotation ─────────────────────────────────────────────
+    gt_label = f"Genotype ({n} codons): {genotype}"
+    fig.text(
+        0.5, 0.01, gt_label,
+        ha="center", va="bottom",
+        fontsize=9,
+        wrap=True,
+        bbox=dict(facecolor="lightyellow", edgecolor="grey", boxstyle="round,pad=0.5"),
+    )
+
+    os.makedirs(os.path.dirname(os.path.abspath(output_filename)), exist_ok=True)
+    plt.savefig(output_filename, bbox_inches="tight")
     plt.close()
+    print(f"Phenotype : {tree}")
+    print(f"Genotype  : {genotype}")
     print(f"Saved tree visualization to {output_filename}")
 
+
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Plot a tree from a string expression")
-    parser.add_argument("expression", type=str, help="The expression string to plot")
-    parser.add_argument("--output", type=str, default="tree_plot.png", help="Output image filename")
-    
+    parser = argparse.ArgumentParser(
+        description="Decode a Standard GE genotype and plot the phenotype expression tree."
+    )
+    parser.add_argument(
+        "genotype",
+        type=str,
+        help="Flat GE genotype as a comma-separated list of integers, e.g. '12,138,227,91'",
+    )
+    parser.add_argument(
+        "--output",
+        type=str,
+        default="tree_plot.png",
+        help="Output image filename (default: tree_plot.png)",
+    )
+
     args = parser.parse_args()
-    plot_tree_string(args.expression, args.output)
+
+    try:
+        genotype = [int(c.strip()) for c in args.genotype.split(",")]
+    except ValueError:
+        print("Error: genotype must be a comma-separated list of integers.")
+        sys.exit(1)
+
+    plot_individual(genotype, args.output)

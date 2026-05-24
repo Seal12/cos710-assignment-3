@@ -359,8 +359,8 @@ class Individual:
         if self.phenotype is None:
             self.decode()
         if self.phenotype is None:
-            return "InvalidIndividual"
-        return str(self.phenotype)
+            return "InvalidIndividual\n | genotype: " + str(self.genotype)
+        return f"{self.phenotype}\n | genotype: {self.genotype}"
 
     @property
     def node_count(self):

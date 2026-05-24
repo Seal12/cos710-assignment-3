@@ -1,8 +1,8 @@
 # Fdb version 4
-["pdflatex"] 1779620158.54026 "/home/seale/Documents/UP/COS710 - AI 1/Workspace/Assignment 3/report/main.tex" "main.pdf" "main" 1779620160.38027 0
+["pdflatex"] 1779636812.24636 "/home/seale/Documents/UP/COS710 - AI 1/Workspace/Assignment 3/report/main.tex" "main.pdf" "main" 1779636813.24353 0
   "/etc/texmf/web2c/texmf.cnf" 1766343303.71222 475 c0e671620eb5563b2130f56340a5fde8 ""
   "/home/seale/.texlive2023/texmf-var/fonts/pk/ljfour/jknappen/ec/tcrm1200.600pk" 1779404232.50139 14040 94dae0b115a01f7aa27411051d732b39 ""
-  "/home/seale/Documents/UP/COS710 - AI 1/Workspace/Assignment 3/report/main.tex" 1779620157.99527 25773 73c6542e4e59b01fe1a63de72ff5b453 ""
+  "/home/seale/Documents/UP/COS710 - AI 1/Workspace/Assignment 3/report/main.tex" 1779636809.69049 25556 083ec3589584f1adf8078d0d7b203a10 ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/jknappen/ec/tcrm1200.tfm" 1136768653 1536 74b7293ec3713bb7fdca8dd1bd1f469c ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm" 1246382020 1004 54797486969f23fa377b128694d548df ""
@@ -21,6 +21,7 @@
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmsy8.tfm" 1136768653 1120 8b7d695260f3cff42e636090a8002094 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmti12.tfm" 1136768653 1484 ed72f8f5cf654cda15ecc8e32bfcbee5 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmtt12.tfm" 1136768653 772 9a936b7f5e2ff0557fce0f62822f0bbf ""
+  "/usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmtt8.tfm" 1136768653 768 d7b9a2629a0c353102ad947dc9221d49 ""
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb" 1248133631 32080 340ef9bf63678554ee606688e7b5339d ""
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb" 1248133631 30251 6afa5cb1d0204815a708a080681d4674 ""
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb" 1248133631 36741 fa121aac0049305630cf160b86157ee4 ""
@@ -97,10 +98,10 @@
   "20260420_001330_gp_fitness_48.png" 1779403917.49411 85759 ad7c68592421f9e44f3c9c14d097d33f ""
   "20260420_001331_gp_best_fitness_48.png" 1779403917.49411 63214 dd4ad1960bf07a7320292817821b8344 ""
   "48_best_indiv.png" 1779403917.49311 222699 8c250ef8000038be675c1ba4550b08eb ""
-  "main.aux" 1779620160.28588 5067 733e3bc1ff54d6c8ce63dc334441ed9b "pdflatex"
-  "main.out" 1779620160.28788 3197 21b0d671d2fe248954e41647ce8fc932 "pdflatex"
-  "main.tex" 1779620157.99527 25773 73c6542e4e59b01fe1a63de72ff5b453 ""
-  "sample_tree.png" 1779403917.49411 60809 acf5b56919b258fd42d9942273cf1bf5 ""
+  "main.aux" 1779636813.17552 5064 43ce21efdd9cc92b7ee7ce9603b8accf "pdflatex"
+  "main.out" 1779636813.17652 3283 062bad757fc2538537b655e130153a21 "pdflatex"
+  "main.tex" 1779636809.69049 25556 083ec3589584f1adf8078d0d7b203a10 ""
+  "sample_tree.png" 1779622334.32494 53616 803942d5faff8c42a31b11f32c6c6ebc ""
   (generated)
   "main.aux"
   "main.log"
