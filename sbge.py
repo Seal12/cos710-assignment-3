@@ -260,8 +260,7 @@ def plot_tree(tree: Primitives.Node, seed: int):
 
 
 def generate_random_individual(target_depth, method):
-    genotype = {nt: [] for nt in GRAMMAR}
-    constants = []
+    genotype = []
 
     def derive(non_terminal, current_depth):
         if non_terminal not in GRAMMAR:
@@ -280,7 +279,13 @@ def generate_random_individual(target_depth, method):
         else:
             r_idx = random.randint(0, len(rules) - 1)
 
-        genotype[non_terminal].append(r_idx)
+        multiples = [m for m in range(0, 50) if (r_idx + len(rules) * m) < 256]
+        if multiples:
+            codon = r_idx + len(rules) * random.choice(multiples)
+        else:
+            codon = r_idx
+        genotype.append(codon)
+
         rule = rules[r_idx]
         rule_type = rule[0]
 
@@ -295,13 +300,10 @@ def generate_random_individual(target_depth, method):
             elif rule_type == "Variable":
                 derive("<var>", current_depth)
             elif rule_type == "Constant":
-                derive("<const>", current_depth)
-        elif non_terminal == "<const>":
-            const_val = round(random.random() * 0.4 - 0.2, 2)
-            constants.append(const_val)
+                pass
 
     derive("<root>", 0)
-    ind = Individual(genotype, constants)
+    ind = Individual(genotype)
     ind.decode()
     return ind
 
@@ -352,6 +354,11 @@ def print_population(pop, fitness=None):
 
 def raw_fitness(tree, data):
     """Calculates the Mean Absolute Percentage Error (MAPE) of the tree on the given data."""
+    if tree.phenotype is None:
+        tree.decode()
+    if tree.phenotype is None:
+        return 1e9
+
     sum_error = 0
     target_col = "Electricity_load"
     total_rows = len(data)
@@ -485,71 +492,52 @@ def crossover(
     max_depth: int,
     crossover_rate: float = 0.5,
 ):
-    """Performs genotype-level single-point crossover for SGE on codon lists and constants."""
+    """Performs genotype-level single-point crossover for standard GE on flat codon lists."""
     if random.random() > crossover_rate:
         return parent1.copy(), parent2.copy()
 
-    child1_gt = {}
-    child2_gt = {}
+    gt1 = list(parent1.genotype)
+    gt2 = list(parent2.genotype)
 
-    for nt in GRAMMAR:
-        gt1 = list(parent1.genotype[nt])
-        gt2 = list(parent2.genotype[nt])
-
-        if gt1 and gt2:
-            cut_point = random.randint(0, min(len(gt1), len(gt2)))
-            c1 = gt1[:cut_point] + gt2[cut_point:]
-            c2 = gt2[:cut_point] + gt1[cut_point:]
-        else:
-            c1 = list(gt1)
-            c2 = list(gt2)
-        child1_gt[nt] = c1
-        child2_gt[nt] = c2
-
-    c_consts1 = list(parent1.constants)
-    c_consts2 = list(parent2.constants)
-    if c_consts1 and c_consts2:
-        cut_point = random.randint(0, min(len(c_consts1), len(c_consts2)))
-        consts1 = c_consts1[:cut_point] + c_consts2[cut_point:]
-        consts2 = c_consts2[:cut_point] + c_consts1[cut_point:]
+    if len(gt1) > 1 and len(gt2) > 1:
+        cut_point = random.randint(1, min(len(gt1), len(gt2)) - 1)
+        c1_gt = gt1[:cut_point] + gt2[cut_point:]
+        c2_gt = gt2[:cut_point] + gt1[cut_point:]
     else:
-        consts1 = list(c_consts1)
-        consts2 = list(c_consts2)
+        c1_gt = list(gt1)
+        c2_gt = list(gt2)
 
-    child1 = Individual(child1_gt, consts1)
-    child2 = Individual(child2_gt, consts2)
+    child1 = Individual(c1_gt)
+    child2 = Individual(c2_gt)
 
     child1.decode()
     child2.decode()
 
-    if child1.depth <= max_depth and child2.depth <= max_depth:
+    if (
+        child1.phenotype is not None
+        and child2.phenotype is not None
+        and child1.depth <= max_depth
+        and child2.depth <= max_depth
+    ):
         return child1, child2
     else:
         return parent1.copy(), parent2.copy()
 
 
 def mutation(parent: Individual, max_depth: int, mutation_rate: float = 0.5):
-    """Performs codon flip mutation and gaussian noise mutation on constants."""
+    """Performs standard codon flip mutation on a flat list."""
     if random.random() > mutation_rate:
         return parent.copy()
 
     for _ in range(3):
-        child_gt = {}
-        for nt in GRAMMAR:
-            child_gt[nt] = list(parent.genotype[nt])
-            rules = GRAMMAR[nt]
-            for j in range(len(child_gt[nt])):
-                if random.random() < 0.15:
-                    child_gt[nt][j] = random.randint(0, len(rules) - 1)
-
-        child_consts = list(parent.constants)
-        for j in range(len(child_consts)):
+        child_gt = list(parent.genotype)
+        for j in range(len(child_gt)):
             if random.random() < 0.15:
-                child_consts[j] = round(child_consts[j] + random.gauss(0, 0.05), 2)
+                child_gt[j] = random.randint(0, 255)
 
-        child = Individual(child_gt, child_consts)
+        child = Individual(child_gt)
         child.decode()
-        if child.depth <= max_depth:
+        if child.phenotype is not None and child.depth <= max_depth:
             return child
 
     return parent.copy()

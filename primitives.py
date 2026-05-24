@@ -255,37 +255,50 @@ GRAMMAR = {
 
 
 class Individual:
-    def __init__(self, genotype=None, constants=None):
+    def __init__(self, genotype=None):
         if genotype is None:
-            self.genotype = {nt: [] for nt in GRAMMAR}
-            self.constants = []
+            self.genotype = []
         else:
             self.genotype = genotype
-            self.constants = constants
 
         self.phenotype = None
         self.fitness = None
 
     def decode(self):
-        state = {nt: 0 for nt in GRAMMAR}
-        state["const"] = 0
+        if not self.genotype:
+            self.phenotype = None
+            return
+
+        codon_idx = 0
+        wraps = 0
+        max_wraps = 10
+        total_nodes = 0
+        max_nodes = 1000
 
         def decode_node(non_terminal):
+            nonlocal codon_idx, wraps, total_nodes
+
+            if total_nodes > max_nodes:
+                raise Exception("Max nodes exceeded during GE decoding")
+
             if non_terminal not in GRAMMAR:
                 return non_terminal
 
-            idx = state[non_terminal]
-            state[non_terminal] += 1
+            if codon_idx >= len(self.genotype):
+                wraps += 1
+                if wraps > max_wraps:
+                    raise Exception("Max wraps exceeded during GE decoding")
+                codon_idx = 0
+
+            codon = self.genotype[codon_idx]
+            codon_idx += 1
 
             rules = GRAMMAR[non_terminal]
-            if idx >= len(self.genotype[non_terminal]):
-                r_idx = random.randint(0, len(rules) - 1)
-                self.genotype[non_terminal].append(r_idx)
-            else:
-                r_idx = self.genotype[non_terminal][idx]
-
+            r_idx = codon % len(rules)
             rule = rules[r_idx]
             rule_type = rule[0]
+
+            total_nodes += 1
 
             if non_terminal == "<root>":
                 left = decode_node("<expr>")
@@ -313,13 +326,7 @@ class Individual:
                     var_name = decode_node("<var>")
                     return Variable(var_name)
                 elif rule_type == "Constant":
-                    c_idx = state["const"]
-                    state["const"] += 1
-                    if c_idx >= len(self.constants):
-                        const_val = round(random.random() * 0.4 - 0.2, 2)
-                        self.constants.append(const_val)
-                    else:
-                        const_val = self.constants[c_idx]
+                    const_val = round(((codon % 256) / 255.0) * 0.4 - 0.2, 2)
                     return Constant(const_val)
 
             elif non_terminal == "<op>":
@@ -329,16 +336,14 @@ class Individual:
             elif non_terminal == "<const>":
                 return rule_type
 
-        self.phenotype = decode_node("<root>")
-
-        for nt in GRAMMAR:
-            self.genotype[nt] = self.genotype[nt][: state[nt]]
-        self.constants = self.constants[: state["const"]]
+        try:
+            self.phenotype = decode_node("<root>")
+        except Exception:
+            self.phenotype = None
 
     def copy(self):
-        new_gt = {nt: list(self.genotype[nt]) for nt in self.genotype}
-        new_consts = list(self.constants)
-        new_ind = Individual(new_gt, new_consts)
+        new_gt = list(self.genotype)
+        new_ind = Individual(new_gt)
         new_ind.fitness = self.fitness
         new_ind.phenotype = self.phenotype
         return new_ind
@@ -346,21 +351,29 @@ class Individual:
     def eval(self, **kwargs):
         if self.phenotype is None:
             self.decode()
+        if self.phenotype is None:
+            raise ValueError("Attempted to evaluate an invalid individual")
         return self.phenotype.eval(**kwargs)
 
     def __str__(self):
         if self.phenotype is None:
             self.decode()
+        if self.phenotype is None:
+            return "InvalidIndividual"
         return str(self.phenotype)
 
     @property
     def node_count(self):
         if self.phenotype is None:
             self.decode()
+        if self.phenotype is None:
+            return 0
         return self.phenotype.node_count
 
     @property
     def depth(self):
         if self.phenotype is None:
             self.decode()
+        if self.phenotype is None:
+            return 0
         return self.phenotype.depth

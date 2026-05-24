@@ -1,8 +1,8 @@
 # Fdb version 4
-["pdflatex"] 1779405515.01481 "/home/seale/Documents/UP/COS710 - AI 1/Workspace/Assignment 3/report/main.tex" "main.pdf" "main" 1779405516.069 0
+["pdflatex"] 1779620158.54026 "/home/seale/Documents/UP/COS710 - AI 1/Workspace/Assignment 3/report/main.tex" "main.pdf" "main" 1779620160.38027 0
   "/etc/texmf/web2c/texmf.cnf" 1766343303.71222 475 c0e671620eb5563b2130f56340a5fde8 ""
   "/home/seale/.texlive2023/texmf-var/fonts/pk/ljfour/jknappen/ec/tcrm1200.600pk" 1779404232.50139 14040 94dae0b115a01f7aa27411051d732b39 ""
-  "/home/seale/Documents/UP/COS710 - AI 1/Workspace/Assignment 3/report/main.tex" 1779405514.79153 26091 2369528cdaffa07ad55178335875304c ""
+  "/home/seale/Documents/UP/COS710 - AI 1/Workspace/Assignment 3/report/main.tex" 1779620157.99527 25773 73c6542e4e59b01fe1a63de72ff5b453 ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/jknappen/ec/tcrm1200.tfm" 1136768653 1536 74b7293ec3713bb7fdca8dd1bd1f469c ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm" 1246382020 1004 54797486969f23fa377b128694d548df ""
@@ -97,9 +97,9 @@
   "20260420_001330_gp_fitness_48.png" 1779403917.49411 85759 ad7c68592421f9e44f3c9c14d097d33f ""
   "20260420_001331_gp_best_fitness_48.png" 1779403917.49411 63214 dd4ad1960bf07a7320292817821b8344 ""
   "48_best_indiv.png" 1779403917.49311 222699 8c250ef8000038be675c1ba4550b08eb ""
-  "main.aux" 1779405516.01454 5062 100a183cce10482a19c7f8dfc663695f "pdflatex"
-  "main.out" 1779405516.01554 3242 b4288e64ce6621b659402e64ea3eb261 "pdflatex"
-  "main.tex" 1779405514.79153 26091 2369528cdaffa07ad55178335875304c ""
+  "main.aux" 1779620160.28588 5067 733e3bc1ff54d6c8ce63dc334441ed9b "pdflatex"
+  "main.out" 1779620160.28788 3197 21b0d671d2fe248954e41647ce8fc932 "pdflatex"
+  "main.tex" 1779620157.99527 25773 73c6542e4e59b01fe1a63de72ff5b453 ""
   "sample_tree.png" 1779403917.49411 60809 acf5b56919b258fd42d9942273cf1bf5 ""
   (generated)
   "main.aux"
