@@ -1,8 +1,8 @@
 # Fdb version 4
-["pdflatex"] 1779656169.97742 "/home/seale/Documents/UP/COS710 - AI 1/Workspace/Assignment 3/report/main.tex" "main.pdf" "main" 1779656170.80304 0
+["pdflatex"] 1779657705.73602 "/home/seale/Documents/UP/COS710 - AI 1/Workspace/Assignment 3/report/main.tex" "main.pdf" "main" 1779657710.71684 0
   "/etc/texmf/web2c/texmf.cnf" 1766343303.71222 475 c0e671620eb5563b2130f56340a5fde8 ""
   "/home/seale/.texlive2023/texmf-var/fonts/pk/ljfour/jknappen/ec/tcrm1200.600pk" 1779404232.50139 14040 94dae0b115a01f7aa27411051d732b39 ""
-  "/home/seale/Documents/UP/COS710 - AI 1/Workspace/Assignment 3/report/main.tex" 1779655289.03213 31006 a5f0e1f275649f755859d0cab5bbc8c2 ""
+  "/home/seale/Documents/UP/COS710 - AI 1/Workspace/Assignment 3/report/main.tex" 1779657701.52201 31326 f6a57c8319bbbb40e7454656a182883a ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/jknappen/ec/tcrm1200.tfm" 1136768653 1536 74b7293ec3713bb7fdca8dd1bd1f469c ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm" 1246382020 1004 54797486969f23fa377b128694d548df ""
@@ -97,10 +97,10 @@
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1766351239 6800784 ef874e218bf86cd184a5498205eb531a ""
   "20260524_200715_gp_best_fitness_35.png" 1779654051.22816 64499 03ee36507ec6a9ce1880ae5ae512f21e ""
   "20260524_200715_gp_fitness_35.png" 1779654018.25078 104232 500198ecaefba9404cd00c0f52ebbd5e ""
-  "35_individual_tree.png" 1779656168.52411 128800 d9a0dbf3a0bb01377507606da8f4a307 ""
-  "main.aux" 1779656170.75115 5435 fd994ed2490b8c11958c9ae768c8780f "pdflatex"
-  "main.out" 1779656170.75215 3593 8fddde202e721b1f687f83dd52ae7e44 "pdflatex"
-  "main.tex" 1779655289.03213 31006 a5f0e1f275649f755859d0cab5bbc8c2 ""
+  "35_individual_tree.png" 1779656195.97962 133097 3c64c945def762d1c862cff9047b3f04 ""
+  "main.aux" 1779657709.90803 5435 fd994ed2490b8c11958c9ae768c8780f "pdflatex"
+  "main.out" 1779657709.90903 3593 8fddde202e721b1f687f83dd52ae7e44 "pdflatex"
+  "main.tex" 1779657701.52201 31326 f6a57c8319bbbb40e7454656a182883a ""
   "sample_tree.png" 1779622334.32494 53616 803942d5faff8c42a31b11f32c6c6ebc ""
   (generated)
   "main.aux"

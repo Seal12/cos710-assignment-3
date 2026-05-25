@@ -1,10 +1,11 @@
-# COS710 Assignment 2: Structure-Based Genetic Programming
+# COS710 Assignment 3: Standard Grammatical Evolution
 
-This repository contains a high-performance **Structure-Based Genetic Programming (SBGP)** system designed for time-series forecasting of residential electricity load. The system evolves mathematical expression trees to predict load values based on historical lagged data.
+This repository contains a high-performance **Standard Grammatical Evolution (GE)** system designed for time-series forecasting of residential electricity load. The system evolves flat integer genotypes into mathematical expression trees via a context-free grammar to predict load values based on historical lagged data.
 
 ## Key Features
 
-- **Structure-Based GP:** Implements morphological similarity measures using Global Index (GI) and Local Index (LI) to enforce structural diversity and mitigate bloat.
+- **Standard Grammatical Evolution:** Implements a strict Context-Free Grammar (CFG) for integer-to-tree decoding, offloading structural constraints to the grammar and ensuring absolute mathematical validity.
+- **Structural Parsimony Pressure:** Explicitly inspects the phenotype structure post-decoding to heavily penalize constant-only trees (bloat), forcing the algorithm to model dynamic variable relationships.
 - **Asynchronous Multiprocessing:** Utilizes `concurrent.futures.ProcessPoolExecutor` to parallelize fitness evaluations across all available CPU cores, enabling rapid traversal of large datasets.
 - **Robust Metrics:** Uses **Mean Absolute Percentage Error (MAPE)** for scale-invariant fitness evaluation.
 - **Tumbling Sliding Window:** Evaluates individuals across shifting 30-day temporal windows to ensure generalization across the full 5.7-year dataset.
@@ -38,12 +39,12 @@ You can also run the simulation within an isolated container:
 2. **Run the simulation:**
    (Mapping the `out/` volume ensures you can access the results on your host machine)
    ```bash
-   docker run -v $(pwd)/out:/app/out gp-simulation
+   docker run -v "$(pwd)/out":/app/out gp-simulation
    ```
 
 3. **Override default arguments:**
    ```bash
-   docker run -v $(pwd)/out:/app/out gp-simulation --pop-size 50 --gens 20
+   docker run -v "$(pwd)/out":/app/out gp-simulation --pop-size 50 --gens 20
    ```
 
 ### Command Line Arguments
@@ -76,8 +77,9 @@ All experimental outputs are stored in the `out/` directory:
 
 ## Project Structure
 
-- `sbge.py`: Main entry point and evolutionary logic.
-- `primitives.py`: Definition of function sets (+, -, *, /, min, max) and terminal nodes.
+- `sbge.py`: Main entry point and evolutionary logic (Standard GE implementation).
+- `primitives.py`: Definition of the context-free grammar, AST nodes, function sets (+, -, *, /, min, max), and terminal nodes.
 - `utils/logger.py`: Custom logging and progress monitoring.
+- `utils/plot_string.py`: Standalone utility to manually decode and visualize phenotype trees from flat integer strings.
 - `data/`: Directory containing the UK Residential Energy Dataset.
 - `report/`: LaTeX source and finalized academic report.
